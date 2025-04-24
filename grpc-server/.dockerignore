@@ -1,0 +1,15 @@
+# Git
+.git
+.gitignore
+
+# IDE
+.idea
+.vscode
+
+# Build artifacts
+*.pb.go
+helloworld/
+server
+
+# OS
+.DS_Store 
