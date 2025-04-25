@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	pb "grpc-client/helloworld"
@@ -13,9 +14,18 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-const (
-	grpcAddress = "localhost:50051"
+var (
+	grpcAddress = getEnv("GRPC_ADDRESS", "https://mdeq7qigmp.ap-southeast-1.awsapprunner.com")
 )
+
+// getEnv retrieves an environment variable or returns a default value
+func getEnv(key, fallback string) string {
+	value := os.Getenv(key)
+	if len(value) > 0 {
+		return value
+	}
+	return fallback
+}
 
 func main() {
 	// Set up HTTP server
@@ -48,7 +58,7 @@ func main() {
 		fmt.Fprintf(w, "gRPC Response: %s", resp.Message)
 	})
 
-	log.Printf("HTTP server listening on :8080")
+	log.Printf("HTTP server listening on :8080, connecting to gRPC server at %s", grpcAddress)
 	if err := http.ListenAndServe(":8080", nil); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
