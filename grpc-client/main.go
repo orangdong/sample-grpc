@@ -15,7 +15,7 @@ import (
 )
 
 var (
-	grpcAddress = getEnv("GRPC_ADDRESS", "https://mdeq7qigmp.ap-southeast-1.awsapprunner.com")
+	grpcAddress = getEnv("GRPC_ADDRESS", "localhost:50051")
 )
 
 // getEnv retrieves an environment variable or returns a default value
@@ -56,6 +56,12 @@ func main() {
 
 		// Write the response back to the HTTP client
 		fmt.Fprintf(w, "gRPC Response: %s", resp.Message)
+	})
+
+	// Health check endpoint
+	http.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintln(w, "OK")
 	})
 
 	log.Printf("HTTP server listening on :8080, connecting to gRPC server at %s", grpcAddress)
