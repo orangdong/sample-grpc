@@ -12,10 +12,11 @@ import (
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/metadata"
 )
 
 var (
-	grpcAddress = getEnv("GRPC_ADDRESS", "localhost:50051")
+	grpcAddress = getEnv("GRPC_ADDRESS", "https://3in2al3as3.execute-api.ap-southeast-1.amazonaws.com/dev")
 )
 
 // getEnv retrieves an environment variable or returns a default value
@@ -46,7 +47,11 @@ func main() {
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 		defer cancel()
 
-		// Make the gRPC call
+		// Create metadata and attach it to the context
+		md := metadata.Pairs("X-Custom-Header", "my-value")
+		ctx = metadata.NewOutgoingContext(ctx, md)
+
+		// Make the gRPC call using the context with metadata
 		resp, err := c.SayHello(ctx, &pb.HelloRequest{Name: "HTTP Client"})
 		if err != nil {
 			log.Printf("could not greet: %v", err)
