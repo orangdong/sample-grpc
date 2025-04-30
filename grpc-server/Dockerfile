@@ -15,7 +15,8 @@ COPY main.go .
 
 # Build the application
 # Using '.' builds the package in the current directory
-RUN CGO_ENABLED=0 GOOS=linux go build -o /app/server .
+# Explicitly set OS and Architecture for cross-compilation if needed
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /app/server .
 
 # Final stage
 FROM alpine:latest
@@ -30,6 +31,8 @@ COPY --from=builder /app/server .
 
 # Expose the gRPC port
 EXPOSE 50051
+# Expose the HTTP health check port
+EXPOSE 8080
 
 # Run the server
 CMD ["./server"] 
